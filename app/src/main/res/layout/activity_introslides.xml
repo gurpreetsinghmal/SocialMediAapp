@@ -24,17 +24,16 @@
         />
     <Button
         android:id="@+id/intro_btn_next"
-        android:visibility="gone"
+        android:paddingLeft="12dp"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@drawable/btn_bg"
+        android:drawableLeft="@drawable/ic_right"
         android:drawableTint="@color/white"
+        android:gravity="left|center_vertical"
+        android:background="@drawable/btn_bg"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:drawablePadding="5dp"
-        android:text=">"
-        android:textSize="20sp"
-        android:textColor="@color/white"
+        android:drawablePadding="20dp"
         android:layout_margin="10dp"
         />
 

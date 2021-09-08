@@ -12,16 +12,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.technominds.lecture.socialmediaapp.CustomModels.UserModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -36,6 +37,9 @@ public class MyProfile extends AppCompatActivity {
     FirebaseStorage firebaseStorage;
     StorageReference mref;
 
+    FirebaseDatabase db;
+    DatabaseReference dbref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +50,7 @@ public class MyProfile extends AppCompatActivity {
         name=findViewById(R.id.profile_name);
 
         firebaseStorage=FirebaseStorage.getInstance();
+        db=FirebaseDatabase.getInstance();
 
         if(mauth.getCurrentUser().getEmail().isEmpty())
         {
@@ -96,22 +101,31 @@ public class MyProfile extends AppCompatActivity {
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setMessage("Uploading...");
             progressDialog.show();
-            String userimage=mauth.getUid();
-            mref=firebaseStorage.getReference("profiles/"+userimage);
+            String user_id=mauth.getUid();
+            mref=firebaseStorage.getReference("profiles/"+user_id);
             mref.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                    Toast.makeText(MyProfile.this, "Successfully saved Profile", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MyProfile.this,HomeActivity.class));
-                    finish();
+
+                    taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            progressDialog.dismiss();
+                            UserModel m=new UserModel(name.getText().toString(),user_id,mauth.getCurrentUser().getEmail()
+                            ,uri.toString());
+                            savedata(m);
+                        }
+                    });
+
+
+
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                    float val=(float) (100*snapshot.getBytesTransferred()/snapshot.getTotalByteCount());
-                    progressDialog.setProgress((int) val);
-                    //progressDialog.setMessage("Uploading :"+(val)+" %");
+                    double progress = (100.0 * snapshot.getBytesTransferred()) / snapshot.getTotalByteCount();
+                    progressDialog.setProgress((int) progress);
+                    progressDialog.setMessage("Uploading :"+(progress)+" %");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -122,4 +136,23 @@ public class MyProfile extends AppCompatActivity {
             });
         }
     }
+
+    private void savedata(UserModel m) {
+        dbref=db.getReference("users");
+        dbref.child(m.getUid()).setValue(m).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(MyProfile.this, "Successfully Saved Profile", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MyProfile.this,HomeActivity.class));
+                finish();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(MyProfile.this, ""+e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
 }

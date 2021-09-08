@@ -41,7 +41,8 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser user=mauth.getCurrentUser();
         if(user!=null)
         {
-            gotoprofile();
+            startActivity(new Intent(LoginActivity.this,HomeActivity.class));
+            finish();
         }
     }
 

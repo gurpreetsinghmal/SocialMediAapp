@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="200dp"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_bg"
+        android:scaleX="5"
+        android:layout_centerHorizontal="true"
+        android:scaleY="3"
+        />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/head_user_pic"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:src="@drawable/ic_user"
+
+        />
+
+    <TextView
+        android:id="@+id/head_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/head_user_pic"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:fontFamily="@font/aladin"
+        android:textSize="20sp"
+        android:textColor="@color/color4"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/head_email"
+        android:layout_below="@id/head_name"
+        android:layout_marginLeft="10dp"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:layout_marginBottom="10dp"
+        />
+
+</RelativeLayout>
