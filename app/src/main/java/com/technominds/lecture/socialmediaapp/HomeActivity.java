@@ -6,14 +6,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,7 +27,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.technominds.lecture.socialmediaapp.CustomAdapters.PostRecyclerView;
+import com.technominds.lecture.socialmediaapp.CustomModels.PostModel;
 import com.technominds.lecture.socialmediaapp.CustomModels.UserModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
     Toolbar home_toolbar;
@@ -34,9 +44,14 @@ public class HomeActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
 
-    FirebaseUser muser;
-    DatabaseReference dbref;
+    FloatingActionButton home_fbtn;
 
+    FirebaseUser muser;
+    DatabaseReference dbref,postref;
+
+    RecyclerView home_rv;
+    PostRecyclerView adapter;
+    List<PostModel> postModelList=new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +61,15 @@ public class HomeActivity extends AppCompatActivity {
 
         drawerLayout=findViewById(R.id.home_drawer_layout);
         navigationView=findViewById(R.id.home_nav);
+        home_rv=findViewById(R.id.home_rv);
+        home_fbtn=findViewById(R.id.home_fbtn);
+
+        home_fbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this,AddPostActivity.class));
+            }
+        });
 
         //header references
         user_name=navigationView.getHeaderView(0).findViewById(R.id.head_name);
@@ -56,7 +80,28 @@ public class HomeActivity extends AppCompatActivity {
         muser=FirebaseAuth.getInstance().getCurrentUser();
         dbref= FirebaseDatabase.getInstance().getReference("users");
 
+        postref= FirebaseDatabase.getInstance().getReference("posts");
 
+        postref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postModelList.clear();
+                for(DataSnapshot s:snapshot.getChildren())
+                {
+                    PostModel p=s.getValue(PostModel.class);
+                    postModelList.add(p);
+                }
+
+                home_rv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
+                adapter=new PostRecyclerView(postModelList,HomeActivity.this);
+                home_rv.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         dbref.child(muser.getUid().toString()).addValueEventListener(new ValueEventListener() {
             @Override
