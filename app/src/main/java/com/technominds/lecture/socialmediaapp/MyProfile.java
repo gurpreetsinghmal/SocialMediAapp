@@ -22,6 +22,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.technominds.lecture.socialmediaapp.CustomModels.PostModel;
 import com.technominds.lecture.socialmediaapp.CustomModels.UserModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -111,8 +112,10 @@ public class MyProfile extends AppCompatActivity {
                         @Override
                         public void onSuccess(Uri uri) {
                             progressDialog.dismiss();
+
                             UserModel m=new UserModel(name.getText().toString(),user_id,mauth.getCurrentUser().getEmail()
                             ,uri.toString());
+
                             savedata(m);
                         }
                     });

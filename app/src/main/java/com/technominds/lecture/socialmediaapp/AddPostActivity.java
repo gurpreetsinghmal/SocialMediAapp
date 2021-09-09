@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -26,11 +25,11 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.technominds.lecture.socialmediaapp.CustomModels.PostModel;
-import com.technominds.lecture.socialmediaapp.CustomModels.UserModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 public class AddPostActivity extends AppCompatActivity {
+
     Uri resultUri;
     ImageView post_imv,p_img;
     EditText post_title,post_desc;
@@ -133,8 +132,10 @@ public class AddPostActivity extends AppCompatActivity {
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setMessage("Uploading...");
             progressDialog.show();
+
             String owneremail=mauth.getCurrentUser().getEmail();
             String uid=mauth.getCurrentUser().getUid();
+
             String key=""+System.currentTimeMillis();
             sref.child(key).putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -144,10 +145,12 @@ public class AddPostActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(Uri uri) {
                             progressDialog.dismiss();
-                            PostModel p= new PostModel(post_title.getText().toString(),
-                                    post_desc.getText().toString(),uri.toString(),owneremail,uid,key);
+                            PostModel m=new PostModel(post_title.getText().toString(),post_desc.getText().toString(),
+                                    uri.toString(),owneremail,key,uid);
 
-                            savedata(p);
+                            savedata(m);
+
+
                         }
                     });
 
@@ -172,11 +175,12 @@ public class AddPostActivity extends AppCompatActivity {
     }
 
     private void savedata(PostModel m) {
+
         dbref.child(m.getKey()).setValue(m).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(AddPostActivity.this, "Successfully Posted", Toast.LENGTH_SHORT).show();
-                finish();
+                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -185,4 +189,6 @@ public class AddPostActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

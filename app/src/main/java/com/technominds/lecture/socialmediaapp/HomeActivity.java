@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -50,8 +49,9 @@ public class HomeActivity extends AppCompatActivity {
     DatabaseReference dbref,postref;
 
     RecyclerView home_rv;
+    List<PostModel> list=new ArrayList<>();
     PostRecyclerView adapter;
-    List<PostModel> postModelList=new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,15 +85,14 @@ public class HomeActivity extends AppCompatActivity {
         postref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                postModelList.clear();
+                list.clear();
                 for(DataSnapshot s:snapshot.getChildren())
                 {
-                    PostModel p=s.getValue(PostModel.class);
-                    postModelList.add(p);
+                   PostModel p=s.getValue(PostModel.class);
+                   list.add(p);
                 }
-
+                adapter=new PostRecyclerView(list,HomeActivity.this);
                 home_rv.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
-                adapter=new PostRecyclerView(postModelList,HomeActivity.this);
                 home_rv.setAdapter(adapter);
             }
 
@@ -102,6 +101,8 @@ public class HomeActivity extends AppCompatActivity {
 
             }
         });
+
+
 
         dbref.child(muser.getUid().toString()).addValueEventListener(new ValueEventListener() {
             @Override

@@ -6,20 +6,12 @@ public class PostModel {
     public PostModel() {
     }
 
-    public PostModel(String title, String desc, String post_image, String owner, String uid,String key) {
+    public PostModel(String title, String desc, String post_image, String owner, String key, String uid) {
         this.title = title;
         this.desc = desc;
         this.post_image = post_image;
         this.owner = owner;
-        this.uid=uid;
         this.key = key;
-    }
-
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
         this.uid = uid;
     }
 
@@ -61,5 +53,13 @@ public class PostModel {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }
